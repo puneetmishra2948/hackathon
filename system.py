@@ -87,25 +87,25 @@ class Broker():
             enterShortSignal, tmp_short_entry_price, tmp_short_target, tmp_short_stop =  self.strategy_obj.shortEntry(self.data.iloc[i-self.pass_history:i+1])
                 
             enterLongSignal, tmp_long_entry_price, tmp_long_target, tmp_long_stop =  self.strategy_obj.longEntry(self.data.iloc[i-self.pass_history:i+1])
-                if enterShortSignal == True:
-                    self.position = -1
-                    self.trade_id = self.trade_id + 1
-                    self.trade_type = -1
-                    self.entry_time = self.data.index[i]
-                    self.entry_price = self.data[ 'Close'][i]
+            if enterShortSignal == True:
+                self.position = -1
+                self.trade_id = self.trade_id + 1
+                self.trade_type = -1
+                self.entry_time = self.data.index[i]
+                self.entry_price = self.data['Close'][i]
 
-                    self.target_price = tmp_short_target
-                    self.stop_price = tmp_short_stop
+                self.target_price = tmp_short_target
+                self.stop_price = tmp_short_stop
                     
-                elif enterLongSignal == True:
-                    self.position = 1 
-                    self.trade_id = self.trade_id + 1
-                    self.trade_type = 1
-                    self.entry_time = self.data.index[i]
-                    self.entry_price = self.data[ 'Close'][i]
+            elif enterLongSignal == True:
+                self.position = 1 
+                self.trade_id = self.trade_id + 1
+                self.trade_type = 1
+                self.entry_time = self.data.index[i]
+                self.entry_price = self.data['Close'][i]
         
-                    self.target_price = tmp_long_target
-                    self.stop_price = tmp_long_stop 
+                self.target_price = tmp_long_target
+                self.stop_price = tmp_long_stop 
 
         
         for i in (range(self.pass_history, len(self.data)-1)):
