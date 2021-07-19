@@ -120,7 +120,7 @@ class Broker():
                     if exitShortSignal == True:
                         self.position = 0
                         self.exit_price = exitShortPrice
-                        self.pnl = ((self.entry_price - self.exit_price)
+                        self.pnl = (self.entry_price - self.exit_price)
                         self.exit_time = self.data.index[i]
                         self.tradeExit()
                         takeEntry()
@@ -133,7 +133,7 @@ class Broker():
                     if exitLongSignal == True:
                         self.position = 0
                         self.exit_price = exitLongPrice
-                        self.pnl = ((self.exit_price - self.entry_price)
+                        self.pnl = (self.exit_price - self.entry_price)
                         self.exit_time = self.data.index[i]
                         self.tradeExit()
                         takeEntry()
