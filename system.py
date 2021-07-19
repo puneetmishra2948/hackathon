@@ -34,6 +34,7 @@ class Broker():
         url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
         self.data = pd.read_csv(url2,parse_dates=['Timestamp'], infer_datetime_format=True, memory_map=True, index_col='Timestamp', low_memory=False)
         self.pass_history = 20
+        self.strategy_obj = strategy_obj
         
         self.entry_price = None
         self.exit_price = None
