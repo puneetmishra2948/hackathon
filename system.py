@@ -149,7 +149,6 @@ class Metrics():
         self.trade_logs = trade_logs
         self.trade_logs['Entry Time'] = pd.to_datetime(self.trade_logs['Entry Time'], infer_datetime_format= True)
         self.trade_logs['Exit Time'] = pd.to_datetime(self.trade_logs['Exit Time'], infer_datetime_format= True)
-        self.metric_category = metric_category
         
         self.performance_metrics = pd.DataFrame(index=[
         'Total Trades',
