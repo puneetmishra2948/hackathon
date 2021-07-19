@@ -109,7 +109,7 @@ class Broker():
                 self.stop_price = tmp_long_stop 
 
         
-        for i in (range(self.pass_history, len(self.data)-1)):
+        for i in tqdm(range(self.pass_history, len(self.data)-1)):
             
             if self.position in [1, -1]:
                 
