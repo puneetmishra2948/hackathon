@@ -343,18 +343,18 @@ class GenerateSubmission():
             self.total_trades = total_trades_calc(self)
             ################################################
             def winning_trades_calc(self):
-                mask  = self.trade_logs['PNL']>0
-                return len(self.trade_logs.loc[mask])
+                mask  = temp_tradelog['PNL']>0
+                return len(temp_tradelog.loc[mask])
         
             self.winning_trades = winning_trades_calc(self)
             ################################################
             def net_pnl_calc(self):
-                return round(sum(self.trade_logs['PNL']),2)
+                return round(sum(temp_tradelog['PNL']),2)
         
             self.submission_metrics.loc[str(year), 'Net P/L'] = net_pnl_calc(self)
             ###############################################
             def pnl_per_trade_calc(self):
-                return round(sum(self.trade_logs['PNL'])/len(self.trade_logs), 3)
+                return round(sum(temp_tradelog['PNL'])/len(temp_tradelog), 3)
         
             self.submission_metrics.loc[str(year), 'Avg P/L'] = pnl_per_trade_calc(self)
             ################################################
