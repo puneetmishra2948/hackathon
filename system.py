@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 import warnings
@@ -454,6 +455,8 @@ class GenerateSubmission():
         self.test_trade_logs = self.test_bt.tradeLog
         
         self.combined_tradelog = pd.concat([self.test_trade_logs, self.train_trade_logs], axis=0)
+        
+        self.combined_tradelog['Entry Time'] = pd.to_datetime(self.combined_tradelog['Entry Time'], infer_datetime_format= True)
         
         self.year_array = np.unique(self.combined_tradelog['Entry Time'].dt.year)
         
