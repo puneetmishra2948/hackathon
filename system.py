@@ -162,6 +162,10 @@ class Metrics():
         'Win Percentage',
         'Profit Factor'])
         
+        self.monthly_performance = pd.DataFrame()
+        
+        self.yearly_performance = pd.DataFrame()
+        
     def overall_calc(self):
         
             def total_trades_calc(self):
