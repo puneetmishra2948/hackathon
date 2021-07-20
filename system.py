@@ -34,7 +34,7 @@ class Broker():
                  MA_period_far=200,
                  MA_period_near=50):
         assert price_data is not None
-        self.data = data
+        self.data = price_data
         self.pass_history = 20
         self.strategy_obj = strategy_obj
         
