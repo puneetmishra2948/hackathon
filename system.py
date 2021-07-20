@@ -78,7 +78,7 @@ class Broker():
         
         self.tradeLog.loc[self.trade_id, 'Exit Price'] = self.exit_price
         
-        self.tradeLog.loc[self.trade_id, 'PNL'] = self.pnl      
+        self.tradeLog.loc[self.trade_id, 'PNL'] = self.pnl*1000      
  
     def testerAlgo(self):
 
