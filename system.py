@@ -81,8 +81,8 @@ from functools import reduce
 class Broker():
     def __init__(self,
                  price_data=None,
-                 MA_period_far=200,
-                 MA_period_near=50):
+                 MA_period_slow=200,
+                 MA_period_fast=50):
         
         assert price_data is not None
         self.data = price_data
@@ -94,8 +94,8 @@ class Broker():
         self.position = 0
         self.pnl = 0
         
-        self.MA_period_far = MA_period_far
-        self.MA_period_near = MA_period_near
+        self.MA_period_slow = MA_period_slow
+        self.MA_period_fast = MA_period_fast
         
         self.trade_id = -1
         self.trade_type = None
@@ -103,8 +103,8 @@ class Broker():
         self.exit_time = None
         self.exit_type = None
         
-        self.data['MA NEAR'] = self.data['Close'].rolling(self.MA_period_near).mean()
-        self.data['MA FAR'] = self.data['Close'].rolling(self.MA_period_far).mean()
+        self.data['MA NEAR'] = self.data['Close'].rolling(self.MA_period_fast).mean()
+        self.data['MA FAR'] = self.data['Close'].rolling(self.MA_period_slow).mean()
 
         self.tradeLog = pd.DataFrame(columns=['Trade ID',
                                               'Trade Type',
@@ -188,8 +188,8 @@ class Broker():
                 
 class TestBroker():
     def __init__(self,
-                 MA_period_far=200,
-                 MA_period_near=50):
+                 MA_period_slow=200,
+                 MA_period_fast=50):
         
         url='https://drive.google.com/file/d/1pdzeR8bYD7G_pj7XvWhcJrxnFyzmmqps/view?usp=sharing'
         url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
@@ -208,8 +208,8 @@ class TestBroker():
         self.position = 0
         self.pnl = 0
         
-        self.MA_period_far = MA_period_far
-        self.MA_period_near = MA_period_near
+        self.MA_period_slow = MA_period_slow
+        self.MA_period_fast = MA_period_fast
         
         self.trade_id = -1
         self.trade_type = None
@@ -217,8 +217,8 @@ class TestBroker():
         self.exit_time = None
         self.exit_type = None
         
-        self.data['MA NEAR'] = self.data['Close'].rolling(self.MA_period_near).mean()
-        self.data['MA FAR'] = self.data['Close'].rolling(self.MA_period_far).mean()
+        self.data['MA NEAR'] = self.data['Close'].rolling(self.MA_period_fast).mean()
+        self.data['MA FAR'] = self.data['Close'].rolling(self.MA_period_slow).mean()
 
         self.tradeLog = pd.DataFrame(columns=['Trade ID',
                                               'Trade Type',
@@ -425,16 +425,16 @@ class Metrics():
             
 class GenerateSubmission():
     def __init__(self, 
-                 MA_period_far=None,
-                 MA_period_near=None):
+                 MA_period_slow=None,
+                 MA_period_fast=None):
         
-        assert MA_period_near is not None
-        assert MA_period_far is not None
+        assert MA_period_fast is not None
+        assert MA_period_slow is not None
         
-        self.MA_period_far = MA_period_far
-        self.MA_period_near = MA_period_near
+        self.MA_period_slow = MA_period_slow
+        self.MA_period_fast = MA_period_fast
         
-        self.test_bt = TestBroker(MA_period_far=self.MA_period_far, MA_period_near=self.MA_period_near)
+        self.test_bt = TestBroker(MA_period_slow=self.MA_period_slow, MA_period_fast=self.MA_period_fast)
         
         self.test_bt.testerAlgo()
         
