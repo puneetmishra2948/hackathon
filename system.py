@@ -329,11 +329,7 @@ class GenerateSubmission():
         
         self.year_array = np.unique(self.trade_logs['Entry Time'].dt.year)
         
-        self.submission_metrics = pd.DataFrame(index=[
-        'Year'
-        'Net P/L',
-        'Avg P/L',
-        'Win %'])
+        self.submission_metrics = pd.DataFrame()
         
     def createSubmissionFile(self):
         
