@@ -78,22 +78,22 @@ class SampleStrategy():
 from functools import reduce
 class Broker():
     def __init__(self,
+                 strategy_obj=None,
                  price_data=None,
-                 mode='train',
                  MA_period_far=200,
                  MA_period_near=50):
-        if mode == 'train':
-            assert price_data is not None
-            self.data = price_data
-        if mode == 'test':
-            url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
-            url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
-            self.data = pd.read_csv(url2 ,
-                             parse_dates=['Timestamp'], 
-                             infer_datetime_format=True, 
-                             memory_map=True, 
-                             index_col='Timestamp', 
-                             low_memory=False)
+        
+        assert price_data is not None
+        self.data = price_data
+        # if mode == 'test':
+        #     url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
+        #     url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
+        #     self.data = pd.read_csv(url2 ,
+        #                      parse_dates=['Timestamp'], 
+        #                      infer_datetime_format=True, 
+        #                      memory_map=True, 
+        #                      index_col='Timestamp', 
+        #                      low_memory=False)
             
         self.pass_history = 20
         self.strategy_obj = SampleStrategy()
@@ -318,16 +318,31 @@ class Metrics():
             
             
             
-            
 class GenerateSubmission():
     def __init__(self, 
-                 trade_logs):
+                 train_trade_logs,
+                 MA_period_far=None,
+                 MA_period_near=None):
         
-        self.trade_logs = trade_logs
-        self.trade_logs['Entry Time'] = pd.to_datetime(self.trade_logs['Entry Time'], infer_datetime_format= True)
-        self.trade_logs['Exit Time'] = pd.to_datetime(self.trade_logs['Exit Time'], infer_datetime_format= True)
+        assert MA_period_near is not None
+        assert MA_period_far is not None
         
-        self.year_array = np.unique(self.trade_logs['Entry Time'].dt.year)
+        self.MA_period_far = MA_period_far
+        self.MA_period_near = MA_period_near
+        
+        self.train_trade_logs = train_trade_logs
+        self.train_trade_logs['Entry Time'] = pd.to_datetime(self.train_trade_logs['Entry Time'], infer_datetime_format= True)
+        self.train_trade_logs['Exit Time'] = pd.to_datetime(self.train_trade_logs['Exit Time'], infer_datetime_format= True)
+        
+        self.test_bt = Broker(mode = 'test', MA_period_far=self.MA_period_far, MA_period_near=self.MA_period_near)
+        
+        self.test_bt.testerAlgo()
+        
+        self.test_trade_logs = self.test_bt.tradeLog
+        
+        self.combined_tradelog = pd.concat([self.test_trade_logs, self.train_trade_logs], axis=0)
+        
+        self.year_array = np.unique(self.combined_tradelog['Entry Time'].dt.year)
         
         self.submission_metrics = pd.DataFrame()
         
@@ -335,7 +350,7 @@ class GenerateSubmission():
         
         for year in self.year_array:
             
-            temp_tradelog = self.trade_logs.loc[self.trade_logs['Entry Time'].dt.year==year]
+            temp_tradelog = self.combined_tradelog.loc[self.combined_tradelog['Entry Time'].dt.year==year]
         
             def total_trades_calc(self):
                 return len(temp_tradelog )
