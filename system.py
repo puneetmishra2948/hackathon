@@ -315,3 +315,57 @@ class Metrics():
     def plot_cumulative_returns(self):
             fig = px.line( y= self.trade_logs['PNL'].cumsum(), x=self.trade_logs['Entry Time'], title='Cumulative Returns')
             fig.show()
+            
+            
+            
+            
+class GenerateSubmission():
+    def __init__(self, 
+                 trade_logs):
+        
+        self.trade_logs = trade_logs
+        self.trade_logs['Entry Time'] = pd.to_datetime(self.trade_logs['Entry Time'], infer_datetime_format= True)
+        self.trade_logs['Exit Time'] = pd.to_datetime(self.trade_logs['Exit Time'], infer_datetime_format= True)
+        
+        year_array = np.unique(self.trade_logs['Entry Time'].dt.year)
+        
+        self.submission_metrics = pd.DataFrame(index=[
+        'Year'
+        'Net P/L',
+        'Avg P/L',
+        'Win %'])
+        
+    def createSubmissionFile(self):
+        
+        for year in year_array:
+            
+            temp_tradelog = self.trade_logs.loc[self.trade_logs['Entry Time'].dt.year==year]
+        
+            def total_trades_calc(self):
+                return len(temp_tradelog )
+    
+            self.total_trades = total_trades_calc(self)
+            ################################################
+            def winning_trades_calc(self):
+                mask  = self.trade_logs['PNL']>0
+                return len(self.trade_logs.loc[mask])
+        
+            self.winning_trades = winning_trades_calc(self)
+            ################################################
+            def net_pnl_calc(self):
+                return round(sum(self.trade_logs['PNL']),2)
+        
+            self.performance_metrics.loc[str(year), 'Net P/L'] = net_pnl_calc(self)
+            ###############################################
+            def pnl_per_trade_calc(self):
+                return round(sum(self.trade_logs['PNL'])/len(self.trade_logs), 3)
+        
+            self.performance_metrics.loc[str(year), 'Avg P/L'] = pnl_per_trade_calc(self)
+            ################################################
+            def win_percentage_calc(self):
+                return round((self.winning_trades/self.total_trades)*100,2)
+        
+            self.performance_metrics.loc[str(year),  'Win %'] = win_percentage_calc(self)
+            ################################################
+            
+        self.performance_metrics.index.name = 'Year'
