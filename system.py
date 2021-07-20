@@ -78,7 +78,6 @@ class SampleStrategy():
 from functools import reduce
 class Broker():
     def __init__(self,
-                 strategy_obj=None,
                  price_data=None,
                  mode='train',
                  MA_period_far=200,
