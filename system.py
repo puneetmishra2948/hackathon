@@ -30,7 +30,7 @@ from functools import reduce
 class Broker():
     def __init__(self,
                  strategy_obj=None):
-        url='https://drive.google.com/file/d/1Yk7yHy_gudHB3NccLBAR39tcDuvQHgKU/view?usp=sharing'
+        url='https://drive.google.com/file/d/1-qcwJnJ2eBc57tq-dhYPUGVszBl77G7h/view?usp=sharing'
         url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
         self.data = pd.read_csv(url2,parse_dates=['Timestamp'], infer_datetime_format=True, memory_map=True, index_col='Timestamp', low_memory=False)
         self.pass_history = 20
