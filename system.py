@@ -78,7 +78,6 @@ class SampleStrategy():
 from functools import reduce
 class Broker():
     def __init__(self,
-                 strategy_obj=None,
                  price_data=None,
                  MA_period_far=200,
                  MA_period_near=50):
@@ -94,6 +93,120 @@ class Broker():
         #                      memory_map=True, 
         #                      index_col='Timestamp', 
         #                      low_memory=False)
+            
+        self.pass_history = 20
+        self.strategy_obj = SampleStrategy()
+        
+        self.entry_price = None
+        self.exit_price = None
+        self.position = 0
+        self.pnl = 0
+        
+        self.MA_period_far = MA_period_far
+        self.MA_period_near = MA_period_near
+        
+        self.trade_id = -1
+        self.trade_type = None
+        self.entry_time = None
+        self.exit_time = None
+        self.exit_type = None
+        
+        self.data['MA NEAR'] = self.data['Close'].rolling(self.MA_period_near).mean()
+        self.data['MA FAR'] = self.data['Close'].rolling(self.MA_period_far).mean()
+
+        self.tradeLog = pd.DataFrame(columns=['Trade ID',
+                                              'Trade Type',
+                                              'Entry Time',
+                                              'Entry Price',
+                                              'Exit Time',
+                                              'Exit Price',
+                                              'PNL',
+                                               ])
+            
+    def tradeExit(self):
+        
+        self.tradeLog.loc[self.trade_id, 'Trade ID'] = self.trade_id
+        
+        self.tradeLog.loc[self.trade_id, 'Trade Type'] = self.trade_type
+                  
+        self.tradeLog.loc[self.trade_id, 'Entry Time'] = pd.to_datetime(self.entry_time, infer_datetime_format= True)
+        
+        self.tradeLog.loc[self.trade_id, 'Entry Price'] = self.entry_price
+                    
+        self.tradeLog.loc[self.trade_id, 'Exit Time'] = pd.to_datetime(self.exit_time, infer_datetime_format= True)
+        
+        self.tradeLog.loc[self.trade_id, 'Exit Price'] = self.exit_price
+        
+        self.tradeLog.loc[self.trade_id, 'PNL'] = self.pnl*1000      
+ 
+    def testerAlgo(self):
+
+        def takeEntry():
+
+            assert self.pass_history%1==0
+            enterShortSignal =  self.strategy_obj.shortEntry(self.data.iloc[i-self.pass_history:i+1])
+                
+            enterLongSignal = self.strategy_obj.longEntry(self.data.iloc[i-self.pass_history:i+1])
+            if enterShortSignal == True:
+                self.position = -1
+                self.trade_id = self.trade_id + 1
+                self.trade_type = -1
+                self.entry_time = self.data.index[i]
+                self.entry_price = self.data['Close'][i]
+                    
+            elif enterLongSignal == True:
+                self.position = 1 
+                self.trade_id = self.trade_id + 1
+                self.trade_type = 1
+                self.entry_time = self.data.index[i]
+                self.entry_price = self.data['Close'][i]
+        
+        for i in tqdm(range(self.pass_history, len(self.data)-1)):
+            
+            if self.position in [1, -1]:
+                
+                if self.position == -1:
+                    assert self.pass_history%1==0
+                    exitShortSignal =  self.strategy_obj.shortExit(self.data.iloc[i-self.pass_history:i+1])
+                    
+                    if exitShortSignal == True:
+                        self.position = 0
+                        self.exit_price = self.data['Close'][i]
+                        self.pnl = (self.entry_price - self.exit_price)
+                        self.exit_time = self.data.index[i]
+                        self.tradeExit()
+                        takeEntry()
+                        
+                if self.position == 1:
+
+                    exitLongSignal =  self.strategy_obj.longExit(self.data.iloc[i-self.pass_history:i+1])
+                        
+                    if exitLongSignal == True:
+                        self.position = 0
+                        self.exit_price = self.data['Close'][i]
+                        self.pnl = (self.exit_price - self.entry_price)
+                        self.exit_time = self.data.index[i]
+                        self.tradeExit()
+                        takeEntry()
+
+            elif self.position == 0:
+                takeEntry()
+                
+                
+                
+class TestBroker():
+    def __init__(self,
+                 MA_period_far=200,
+                 MA_period_near=50):
+        
+        url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
+        url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
+        self.data = pd.read_csv(url2 ,
+                             parse_dates=['Timestamp'], 
+                             infer_datetime_format=True, 
+                             memory_map=True, 
+                             index_col='Timestamp', 
+                             low_memory=False)
             
         self.pass_history = 20
         self.strategy_obj = SampleStrategy()
@@ -334,7 +447,7 @@ class GenerateSubmission():
         self.train_trade_logs['Entry Time'] = pd.to_datetime(self.train_trade_logs['Entry Time'], infer_datetime_format= True)
         self.train_trade_logs['Exit Time'] = pd.to_datetime(self.train_trade_logs['Exit Time'], infer_datetime_format= True)
         
-        self.test_bt = Broker(mode = 'test', MA_period_far=self.MA_period_far, MA_period_near=self.MA_period_near)
+        self.test_bt = TestBroker(MA_period_far=self.MA_period_far, MA_period_near=self.MA_period_near)
         
         self.test_bt.testerAlgo()
         
