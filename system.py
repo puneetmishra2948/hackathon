@@ -30,11 +30,11 @@ from functools import reduce
 class Broker():
     def __init__(self,
                  strategy_obj=None,
+                 price_data=None,
                  MA_period_far=200,
                  MA_period_near=50):
-        url='https://drive.google.com/file/d/1-qcwJnJ2eBc57tq-dhYPUGVszBl77G7h/view?usp=sharing'
-        url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
-        self.data = pd.read_csv(url2,parse_dates=['Timestamp'], infer_datetime_format=True, memory_map=True, index_col='Timestamp', low_memory=False)
+        assert price_data is not None
+        self.data = data
         self.pass_history = 20
         self.strategy_obj = strategy_obj
         
@@ -59,8 +59,6 @@ class Broker():
                                               'Trade Type',
                                               'Entry Time',
                                               'Entry Price',
-                                              'Target Price',
-                                              'Stop Price',
                                               'Exit Time',
                                               'Exit Price',
                                               'PNL',
