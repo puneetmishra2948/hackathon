@@ -142,14 +142,14 @@ class Broker():
             if enterShortSignal == True:
                 self.position = -1
                 self.trade_id = self.trade_id + 1
-                self.trade_type = -1
+                self.trade_type = 'Short'
                 self.entry_time = self.data.index[i]
                 self.entry_price = self.data['Close'][i]
                     
             elif enterLongSignal == True:
                 self.position = 1 
                 self.trade_id = self.trade_id + 1
-                self.trade_type = 1
+                self.trade_type = 'Long'
                 self.entry_time = self.data.index[i]
                 self.entry_price = self.data['Close'][i]
         
