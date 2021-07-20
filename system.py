@@ -327,7 +327,7 @@ class GenerateSubmission():
         self.trade_logs['Entry Time'] = pd.to_datetime(self.trade_logs['Entry Time'], infer_datetime_format= True)
         self.trade_logs['Exit Time'] = pd.to_datetime(self.trade_logs['Exit Time'], infer_datetime_format= True)
         
-        year_array = np.unique(self.trade_logs['Entry Time'].dt.year)
+        self.year_array = np.unique(self.trade_logs['Entry Time'].dt.year)
         
         self.submission_metrics = pd.DataFrame(index=[
         'Year'
@@ -337,7 +337,7 @@ class GenerateSubmission():
         
     def createSubmissionFile(self):
         
-        for year in year_array:
+        for year in self.year_array:
             
             temp_tradelog = self.trade_logs.loc[self.trade_logs['Entry Time'].dt.year==year]
         
