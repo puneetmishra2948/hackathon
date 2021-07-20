@@ -1,4 +1,5 @@
 
+
 import pandas as pd
 import numpy as np
 import warnings
@@ -85,16 +86,6 @@ class Broker():
         
         assert price_data is not None
         self.data = price_data
-        # if mode == 'test':
-        #     url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
-        #     url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
-        #     self.data = pd.read_csv(url2 ,
-        #                      parse_dates=['Timestamp'], 
-        #                      infer_datetime_format=True, 
-        #                      memory_map=True, 
-        #                      index_col='Timestamp', 
-        #                      low_memory=False)
-            
         self.pass_history = 20
         self.strategy_obj = SampleStrategy()
         
@@ -200,7 +191,7 @@ class TestBroker():
                  MA_period_far=200,
                  MA_period_near=50):
         
-        url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
+        url='https://drive.google.com/file/d/1pdzeR8bYD7G_pj7XvWhcJrxnFyzmmqps/view?usp=sharing'
         url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
         self.data = pd.read_csv(url2 ,
                              parse_dates=['Timestamp'], 
@@ -434,7 +425,6 @@ class Metrics():
             
 class GenerateSubmission():
     def __init__(self, 
-                 train_trade_logs,
                  MA_period_far=None,
                  MA_period_near=None):
         
@@ -444,17 +434,11 @@ class GenerateSubmission():
         self.MA_period_far = MA_period_far
         self.MA_period_near = MA_period_near
         
-        self.train_trade_logs = train_trade_logs
-        self.train_trade_logs['Entry Time'] = pd.to_datetime(self.train_trade_logs['Entry Time'], infer_datetime_format= True)
-        self.train_trade_logs['Exit Time'] = pd.to_datetime(self.train_trade_logs['Exit Time'], infer_datetime_format= True)
-        
         self.test_bt = TestBroker(MA_period_far=self.MA_period_far, MA_period_near=self.MA_period_near)
         
         self.test_bt.testerAlgo()
         
-        self.test_trade_logs = self.test_bt.tradeLog
-        
-        self.combined_tradelog = pd.concat([self.test_trade_logs, self.train_trade_logs], axis=0)
+        self.combined_tradelog = self.test_bt.tradeLog
         
         self.combined_tradelog['Entry Time'] = pd.to_datetime(self.combined_tradelog['Entry Time'], infer_datetime_format= True)
         
