@@ -40,8 +40,6 @@ class Broker():
         
         self.entry_price = None
         self.exit_price = None
-        self.stop_price = None
-        self.target_price = None
         self.position = 0
         self.pnl = 0
         
@@ -77,10 +75,6 @@ class Broker():
         self.tradeLog.loc[self.trade_id, 'Entry Time'] = pd.to_datetime(self.entry_time, infer_datetime_format= True)
         
         self.tradeLog.loc[self.trade_id, 'Entry Price'] = self.entry_price
-                
-        self.tradeLog.loc[self.trade_id, 'Target Price'] = self.target_price
- 
-        self.tradeLog.loc[self.trade_id, 'Stop Price'] = self.stop_price
                     
         self.tradeLog.loc[self.trade_id, 'Exit Time'] = pd.to_datetime(self.exit_time, infer_datetime_format= True)
         
@@ -93,18 +87,15 @@ class Broker():
         def takeEntry():
 
             assert self.pass_history%1==0
-            enterShortSignal, tmp_short_entry_price, tmp_short_target, tmp_short_stop =  self.strategy_obj.shortEntry(self.data.iloc[i-self.pass_history:i+1])
+            enterShortSignal =  self.strategy_obj.shortEntry(self.data.iloc[i-self.pass_history:i+1])
                 
-            enterLongSignal, tmp_long_entry_price, tmp_long_target, tmp_long_stop =  self.strategy_obj.longEntry(self.data.iloc[i-self.pass_history:i+1])
+            enterLongSignal = self.strategy_obj.longEntry(self.data.iloc[i-self.pass_history:i+1])
             if enterShortSignal == True:
                 self.position = -1
                 self.trade_id = self.trade_id + 1
                 self.trade_type = -1
                 self.entry_time = self.data.index[i]
                 self.entry_price = self.data['Close'][i]
-
-                self.target_price = tmp_short_target
-                self.stop_price = tmp_short_stop
                     
             elif enterLongSignal == True:
                 self.position = 1 
@@ -113,22 +104,17 @@ class Broker():
                 self.entry_time = self.data.index[i]
                 self.entry_price = self.data['Close'][i]
         
-                self.target_price = tmp_long_target
-                self.stop_price = tmp_long_stop 
-
-        
         for i in tqdm(range(self.pass_history, len(self.data)-1)):
             
             if self.position in [1, -1]:
                 
                 if self.position == -1:
                     assert self.pass_history%1==0
-                    exitShortSignal, exitShortPrice =  self.strategy_obj.shortExit(self.data.iloc[i-self.pass_history:i+1],
-                                                                    self.stop_price, self.target_price)
+                    exitShortSignal =  self.strategy_obj.shortExit(self.data.iloc[i-self.pass_history:i+1])
                     
                     if exitShortSignal == True:
                         self.position = 0
-                        self.exit_price = exitShortPrice
+                        self.exit_price = self.data['Close'][i]
                         self.pnl = (self.entry_price - self.exit_price)
                         self.exit_time = self.data.index[i]
                         self.tradeExit()
@@ -136,12 +122,11 @@ class Broker():
                         
                 if self.position == 1:
 
-                    exitLongSignal, exitLongPrice =  self.strategy_obj.longExit(self.data.iloc[i-self.pass_history:i+1],
-                                                                                self.stop_price, self.target_price)
+                    exitLongSignal =  self.strategy_obj.longExit(self.data.iloc[i-self.pass_history:i+1])
                         
                     if exitLongSignal == True:
                         self.position = 0
-                        self.exit_price = exitLongPrice
+                        self.exit_price = self.data['Close'][i]
                         self.pnl = (self.exit_price - self.entry_price)
                         self.exit_time = self.data.index[i]
                         self.tradeExit()
