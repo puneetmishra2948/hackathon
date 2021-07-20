@@ -25,18 +25,79 @@ from numpy import median, mean
 
 pio.templates.default = "plotly_white"
 
+class SampleStrategy():
+    
+    def shortEntry(self, prices_df):
+        
+        short_entry_filter_1 = prices_df['MA NEAR'][-1] < prices_df['MA FAR'][-1]
+        short_entry_filter_2 = prices_df['MA NEAR'][-2] > prices_df['MA FAR'][-2]
+
+        enter_trade = short_entry_filter_1 and short_entry_filter_2
+
+        if enter_trade:
+            return True
+        else:
+            return False
+    def longEntry(self, prices_df):
+        
+        long_entry_filter_1 = prices_df['MA NEAR'][-1] > prices_df['MA FAR'][-1]
+        long_entry_filter_2 = prices_df['MA NEAR'][-2] < prices_df['MA FAR'][-2]
+
+        enter_trade = long_entry_filter_1 and long_entry_filter_2
+
+        if enter_trade:   
+            return True
+        else:
+            return False
+    
+    def longExit(self, prices_df):
+        
+        long_exit_filter_1 = prices_df['MA NEAR'][-1] < prices_df['MA FAR'][-1]
+        long_exit_filter_2 = prices_df['MA NEAR'][-2] > prices_df['MA FAR'][-2]
+        
+        exit_trade = long_exit_filter_1 and long_exit_filter_2
+
+        if exit_trade:
+                return True
+        else:    
+            return False
+ 
+    def shortExit(self, prices_df):
+        
+        short_exit_filter_1 = prices_df['MA NEAR'][-1] > prices_df['MA FAR'][-1]
+        short_exit_filter_2 = prices_df['MA NEAR'][-2] < prices_df['MA FAR'][-2]
+        
+        exit_trade = short_exit_filter_1 and short_exit_filter_2
+
+        if exit_trade:
+            return True
+        else:    
+            return False
+
 
 from functools import reduce
 class Broker():
     def __init__(self,
                  strategy_obj=None,
                  price_data=None,
+                 mode='train',
                  MA_period_far=200,
                  MA_period_near=50):
-        assert price_data is not None
-        self.data = price_data
+        if mode == 'train':
+            assert price_data is not None
+            self.data = price_data
+        if mode == 'test':
+            url='https://drive.google.com/file/d/15m4eQ1OYO8tNQ8grAS57FIjRFhNHcOGG/view?usp=sharing'
+            url2='https://drive.google.com/uc?id=' + url.split('/')[-2]
+            self.data = pd.read_csv(url2 ,
+                             parse_dates=['Timestamp'], 
+                             infer_datetime_format=True, 
+                             memory_map=True, 
+                             index_col='Timestamp', 
+                             low_memory=False)
+            
         self.pass_history = 20
-        self.strategy_obj = strategy_obj
+        self.strategy_obj = SampleStrategy()
         
         self.entry_price = None
         self.exit_price = None
