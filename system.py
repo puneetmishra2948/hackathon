@@ -355,17 +355,17 @@ class GenerateSubmission():
             def net_pnl_calc(self):
                 return round(sum(self.trade_logs['PNL']),2)
         
-            self.performance_metrics.loc[str(year), 'Net P/L'] = net_pnl_calc(self)
+            self.submission_metrics.loc[str(year), 'Net P/L'] = net_pnl_calc(self)
             ###############################################
             def pnl_per_trade_calc(self):
                 return round(sum(self.trade_logs['PNL'])/len(self.trade_logs), 3)
         
-            self.performance_metrics.loc[str(year), 'Avg P/L'] = pnl_per_trade_calc(self)
+            self.submission_metrics.loc[str(year), 'Avg P/L'] = pnl_per_trade_calc(self)
             ################################################
             def win_percentage_calc(self):
                 return round((self.winning_trades/self.total_trades)*100,2)
         
-            self.performance_metrics.loc[str(year),  'Win %'] = win_percentage_calc(self)
+            self.submission_metrics.loc[str(year),  'Win %'] = win_percentage_calc(self)
             ################################################
             
-        self.performance_metrics.index.name = 'Year'
+        self.submission_metrics.index.name = 'Year'
